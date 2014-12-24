@@ -15,11 +15,11 @@ Basic usage
   package main
   import "github.com/rocwong/neko"
   func main() {
-      app := neko.Classic()
-      app.GET("/", func(ctx *neko.Context)  {
-          ctx.Text("Hello world!")
-      })
-      m.Run(":3000")
+    app := neko.Classic()
+    app.GET("/", func(ctx *neko.Context)  {
+        ctx.Text("Hello world!")
+    })
+    m.Run(":3000")
   }
 ~~~
 Initial Neko without middlewares
@@ -45,104 +45,104 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
 
 ##Group Routing
 ~~~go
-	v1 := app.Group("/v1", func(router *neko.RouterGroup) {
-    	//url: /v1/item
-		router.GET("/item", item)
-        
-        // nested group
-		router.Group("/sub", func(sub *neko.RouterGroup) {
-        	//url: /v1/sub/myitem
-			sub.GET("/myitem", myitem)
-		})
-	})
-    //url: /v1/act
-	v1.GET("/act", act)
+  v1 := app.Group("/v1", func(router *neko.RouterGroup) {
+    //match /v1/item
+    router.GET("/item", item)
+
+    // nested group
+    router.Group("/sub", func(sub *neko.RouterGroup) {
+      //match /v1/sub/myitem
+      sub.GET("/myitem", myitem)
+    })
+  })
+  //match /v1/act
+  v1.GET("/act", act)
 ~~~
 
 ## Parameters
 ~~~go
-    // This handler will match /user/neko but will not match neither /user/ or /user
-    app.GET("/user/:name", func(ctx *neko.Context) {
-        ctx.Text("Hello " + ctx.Params.ByName("name"))
-    })
+  // This handler will match /user/neko but will not match neither /user/ or /user
+  app.GET("/user/:name", func(ctx *neko.Context) {
+    ctx.Text("Hello " + ctx.Params.ByName("name"))
+  })
 
-    // This one will match /user/neko/ and also /user/neko/3, but no match /user/neko
-    app.GET("/user/:name/*age", func(ctx *neko.Context) {
-        name := c.Params.ByName("name")
-        age := c.Params.ByName("age")
-        message := name + " is " + action
-        ctx.Text(message)
-    })
+  // This one will match /user/neko/ and also /user/neko/3, but no match /user/neko
+  app.GET("/user/:name/*age", func(ctx *neko.Context) {
+    name := c.Params.ByName("name")
+    age := c.Params.ByName("age")
+    message := name + " is " + action
+    ctx.Text(message)
+  })
 ~~~
 
 ##Response
 
 ####Writing response
 ~~~go
-		// Text writes string
-		ctx.Text("Hello world!")
-        
-        // Json marshals the object to json string and write
-		ctx.Json(neko.JSON({"message": "hey", "status": 200}))
-        
-        // Xml marshals the object to xml string and write
-		ctx.Xml(neko.JSON({"message": "hey", "status": 200}))
+  // Text writes string
+  ctx.Text("Hello world!")
+
+  // Json marshals the object to json string and write
+  ctx.Json(neko.JSON({"message": "hey", "status": 200}))
+
+  // Xml marshals the object to xml string and write
+  ctx.Xml(neko.JSON({"message": "hey", "status": 200}))
 ~~~
 
 ####Redirect
 ~~~go
-	//default redirect 302
-	ctx.Redirect("/")
-    //redirect 301
-	ctx.Redirect("/", 301)
+  //default redirect 302
+  ctx.Redirect("/")
+
+  //redirect 301
+  ctx.Redirect("/", 301)
 ~~~
 
 ####Headers
 ~~~go
   // get header
   ctx.Writer.Header()  //return map[string][]string
-  
+
   // set header
   ctx.SetHeader("x-before", "before")
 ~~~
 
 ## Middlewares
+
 ####Using middlewares
 ~~~go
 	// Global middlewares
 	app.Use(neko.Logger())
     
-    // Per route middlewares, you can add as many as you desire.
-    app.Get("/user", mymiddleware(), mymiddleware2(), user)
+  // Per route middlewares, you can add as many as you desire.
+  app.Get("/user", mymiddleware(), mymiddleware2(), user)
     
-    //Pass middlewares to groups
+  //Pass middlewares to groups
 	v1 := app.Group("/v1", func(router *neko.RouterGroup) {
-    	//url: /v1/item
+    //url: /v1/item
 		router.GET("/item", item)
 	}, mymiddleware1(), mymiddleware2(), mymiddleware3())
     
-    v1.Use(mymiddleware4)
+  v1.Use(mymiddleware4)
 ~~~
+
 ####Custom middlewares
 ~~~go
-	func (ctx *neko.Context) {
-    	//before request
-        t := time.Now()
-        
-        ctx.Next()
-        
-        // after request
-        latency := time.Since(t)
-        log.Print(latency)
+  func (ctx *neko.Context) {
+    //before request
+    t := time.Now()
 
-        // access the status we are sending
-        status := c.Writer.Status()
-        log.Println(status)
-        
-    }
+    ctx.Next()
+
+    // after request
+    latency := time.Since(t)
+    log.Print(latency)
+
+    // access the status we are sending
+    status := c.Writer.Status()
+    log.Println(status)
+  }
 ~~~
-
-
 
 ## More Middleware
 For more middleware and functionality, check out the repositories in the  [neko-contrib](https://github.com/neko-contrib) organization.
