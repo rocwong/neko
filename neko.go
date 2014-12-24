@@ -28,8 +28,8 @@ func Classic(appName ...string) *Engine {
 	if appName != nil && appName[0] != "" {
 		engine.AppName = appName[0]
 	}
-	engine.Use(Recovery())
 	engine.Use(Logger())
+	engine.Use(Recovery())
 	return engine
 }
 
