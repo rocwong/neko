@@ -1,4 +1,4 @@
-#Neko [![wercker status](https://app.wercker.com/status/1b75b5f6f6566869954a26da6eeeeb38/s "wercker status")](https://app.wercker.com/project/bykey/1b75b5f6f6566869954a26da6eeeeb38)
+#Neko [![wercker status](https://app.wercker.com/status/2ab4b79cf2d418606e884c5d98d1ec0d/s "wercker status")](https://app.wercker.com/project/bykey/2ab4b79cf2d418606e884c5d98d1ec0d) [![GoDoc](https://godoc.org/github.com/rocwong/neko?status.svg)](https://godoc.org/github.com/rocwong/neko)
 
 A lightweight web application framework for Golang
 
