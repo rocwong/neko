@@ -89,21 +89,12 @@ func (c *RouterGroup) HEAD(relativePath string, handlers ...HandlerFunc) {
 // of the Router's NotFound handler.
 // To use the operating system's file system implementation,
 // use : router.Static("/static", "/var/www")
-func (c *RouterGroup) Static(prefix, dir string) {
-	absolutePath := c.calculateAbsolutePath(prefix)
-	handler := c.staticHandler(absolutePath, dir)
-	absolutePath = path.Join(absolutePath, "/*filepath")
-
-	// Register GET and HEAD handlers
-	c.GET(absolutePath, handler)
-	c.HEAD(absolutePath, handler)
-}
-
-func (c *RouterGroup) staticHandler(absolutePath, root string) func(*Context) {
-	fileServer := http.StripPrefix(absolutePath, http.FileServer(http.Dir(root)))
-	return func(ctx *Context) {
-		fileServer.ServeHTTP(ctx.Writer, ctx.Req)
+func (c *RouterGroup) Static(path, dir string) {
+	if lastChar(path) != '/' {
+		path += "/"
 	}
+	path += "*filepath"
+	c.engine.router.ServeFiles(path, http.Dir(dir))
 }
 
 func (c *RouterGroup) combineHandlers(handlers []HandlerFunc) []HandlerFunc {
