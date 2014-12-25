@@ -1,4 +1,6 @@
-#Neko [![wercker status](https://app.wercker.com/status/2ab4b79cf2d418606e884c5d98d1ec0d/s "wercker status")](https://app.wercker.com/project/bykey/2ab4b79cf2d418606e884c5d98d1ec0d) [![GoDoc](https://godoc.org/github.com/rocwong/neko?status.svg)](https://godoc.org/github.com/rocwong/neko)
+#Neko
+[![wercker status](https://app.wercker.com/status/2ab4b79cf2d418606e884c5d98d1ec0d/s "wercker status")](https://app.wercker.com/project/bykey/2ab4b79cf2d418606e884c5d98d1ec0d)
+[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/rocwong/neko)
 
 A lightweight web application framework for Golang
 
@@ -111,40 +113,42 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
 
 ####Using middlewares
 ~~~go
-	// Global middlewares
-	app.Use(neko.Logger())
-    
+  // Global middlewares
+  app.Use(neko.Logger())
+
   // Per route middlewares, you can add as many as you desire.
   app.Get("/user", mymiddleware(), mymiddleware2(), user)
-    
+
   //Pass middlewares to groups
-	v1 := app.Group("/v1", func(router *neko.RouterGroup) {
+  v1 := app.Group("/v1", func(router *neko.RouterGroup) {
     //url: /v1/item
-		router.GET("/item", item)
-	}, mymiddleware1(), mymiddleware2(), mymiddleware3())
-    
+    router.GET("/item", item)
+  }, mymiddleware1(), mymiddleware2(), mymiddleware3())
+
   v1.Use(mymiddleware4)
 ~~~
 
 ####Custom middlewares
 ~~~go
-  func (ctx *neko.Context) {
-    //before request
-    t := time.Now()
+  func mymiddleware() neko.HandlerFunc {
+    return func (ctx *neko.Context) {
+      //before request
+      t := time.Now()
 
-    ctx.Next()
+      ctx.Next()
 
-    // after request
-    latency := time.Since(t)
-    log.Print(latency)
+      // after request
+      latency := time.Since(t)
+      log.Print(latency)
 
-    // access the status we are sending
-    status := c.Writer.Status()
-    log.Println(status)
+      // access the status we are sending
+      status := c.Writer.Status()
+      log.Println(status)
+    }
   }
 ~~~
 
-## More Middleware
+#### More middleware
 For more middleware and functionality, check out the repositories in the  [neko-contrib](https://github.com/neko-contrib) organization.
 
 ## Credits & Thanks
