@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-const NoWritten = -1
+const noWritten = -1
 
 type (
 	ResponseWriter interface {
@@ -41,7 +41,7 @@ func (c *writer) Size() int {
 }
 
 func (c *writer) Written() bool {
-	return c.size != NoWritten
+	return c.size != noWritten
 }
 
 func (c *writer) WriteHeaderNow() {
@@ -100,5 +100,5 @@ func (c *writer) reset(writer http.ResponseWriter) {
 	c.ResponseWriter = writer
 	c.status = http.StatusOK
 	c.beforeFuncs = nil
-	c.size = NoWritten
+	c.size = noWritten
 }
