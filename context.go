@@ -17,6 +17,7 @@ type Context struct {
 	writer   writer
 	handlers []HandlerFunc
 	index    int8
+	HtmlEngine
 }
 
 // Next should be used only in the middlewares.
@@ -35,10 +36,10 @@ func (c *Context) SetHeader(key, value string) {
 }
 
 // Redirect returns a HTTP redirect to the specific location. default for 302
-func (c *Context) Redirect(location string, code ...int) {
+func (c *Context) Redirect(location string, status ...int) {
 	c.SetHeader("Location", location)
-	if code != nil {
-		http.Redirect(c.Writer, c.Req, location, code[0])
+	if status != nil {
+		http.Redirect(c.Writer, c.Req, location, status[0])
 	} else {
 		http.Redirect(c.Writer, c.Req, location, 302)
 	}

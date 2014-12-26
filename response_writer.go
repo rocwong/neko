@@ -71,8 +71,8 @@ func (c *writer) WriteHeader(code int) {
 	}
 }
 
-func (w *writer) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	hijacker, ok := w.ResponseWriter.(http.Hijacker)
+func (c *writer) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hijacker, ok := c.ResponseWriter.(http.Hijacker)
 	if !ok {
 		return nil, nil, errors.New("the ResponseWriter doesn't support the Hijacker interface")
 	}
