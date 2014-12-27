@@ -90,6 +90,9 @@ func (c *Context) ClientIP() string {
 }
 
 func (c *Context) executeRender(data interface{}, w http.ResponseWriter, render render.Render, status ...int) {
+	if status != nil {
+		c.Writer.WriteHeader(status[0])
+	}
 	if err := render.Render(data, w); err != nil {
 		c.Writer.WriteHeader(500)
 		c.Abort()

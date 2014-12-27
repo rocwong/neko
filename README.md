@@ -103,7 +103,7 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
 ####Headers
 ~~~go
   // get header
-  ctx.Writer.Header()  //return map[string][]string
+  ctx.Writer.Header()
 
   // set header
   ctx.SetHeader("x-before", "before")
