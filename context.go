@@ -1,9 +1,9 @@
 package neko
 
 import (
-	"encoding/json"
-	"encoding/xml"
 	"github.com/julienschmidt/httprouter"
+	"github.com/rocwong/neko/render"
+	"math"
 	"net/http"
 )
 
@@ -20,6 +20,10 @@ type Context struct {
 	HtmlEngine
 }
 
+const (
+	abortIndex = math.MaxInt8 / 2
+)
+
 // Next should be used only in the middlewares.
 // It executes the pending handlers in the chain inside the calling handler.
 func (c *Context) Next() {
@@ -35,6 +39,11 @@ func (c *Context) SetHeader(key, value string) {
 	c.Writer.Header().Set(key, value)
 }
 
+// Forces the system to do not continue calling the pending handlers in the chain.
+func (c *Context) Abort() {
+	c.index = abortIndex
+}
+
 // Redirect returns a HTTP redirect to the specific location. default for 302
 func (c *Context) Redirect(location string, status ...int) {
 	c.SetHeader("Location", location)
@@ -47,24 +56,25 @@ func (c *Context) Redirect(location string, status ...int) {
 
 // Serializes the given struct as JSON into the response body in a fast and efficient way.
 // It also sets the Content-Type as "application/json".
-func (c *Context) Json(data interface{}) error {
-	c.SetHeader("Content-Type", "application/json")
-	encoder := json.NewEncoder(c.Writer)
-	return encoder.Encode(data)
+func (c *Context) Json(data interface{}, status ...int) {
+	c.executeRender(data, c.Writer, render.JSON{}, status...)
+}
+
+// Serializes the given struct as JSONP into the response body in a fast and efficient way.
+// It also sets the Content-Type as "application/javascript".
+func (c *Context) Jsonp(callback string, data interface{}, status ...int) {
+	c.executeRender(data, c.Writer, render.JSONP{Callback: callback}, status...)
 }
 
 // Serializes the given struct as XML into the response body in a fast and efficient way.
 // It also sets the Content-Type as "application/xml".
-func (c *Context) Xml(data interface{}) error {
-	c.SetHeader("Content-Type", "application/xml")
-	encoder := xml.NewEncoder(c.Writer)
-	return encoder.Encode(data)
+func (c *Context) Xml(data interface{}, status ...int) {
+	c.executeRender(data, c.Writer, render.XML{}, status...)
 }
 
 // Writes the given string into the response body and sets the Content-Type to "text/plain".
-func (c *Context) Text(data string) {
-	c.SetHeader("Content-Type", "text/plain")
-	c.Writer.Write([]byte(data))
+func (c *Context) Text(data string, status ...int) {
+	c.executeRender(data, c.Writer, render.TEXT{}, status...)
 }
 
 // ClientIP returns more real IP address.
@@ -77,6 +87,13 @@ func (c *Context) ClientIP() string {
 		clientIP = c.Req.RemoteAddr
 	}
 	return clientIP
+}
+
+func (c *Context) executeRender(data interface{}, w http.ResponseWriter, render render.Render, status ...int) {
+	if err := render.Render(data, w); err != nil {
+		c.Writer.WriteHeader(500)
+		c.Abort()
+	}
 }
 
 func (c *Engine) createContext(w http.ResponseWriter, req *http.Request, params httprouter.Params, handlers []HandlerFunc) *Context {

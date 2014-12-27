@@ -7,13 +7,13 @@ import (
 	"sync"
 )
 
-func Version() string {
-	return "0.0.1"
-}
-
 type (
 	HandlerFunc func(*Context)
-	Engine      struct {
+	// HtmlEngine is an interface for parsing html templates and redering HTML.
+	HtmlEngine interface {
+		Render(view string, context interface{}, status ...int) error
+	}
+	Engine struct {
 		*RouterGroup
 		AppName    string
 		router     *httprouter.Router
@@ -21,6 +21,10 @@ type (
 		pool       sync.Pool
 	}
 )
+
+func Version() string {
+	return "0.0.1"
+}
 
 // Classic creates a classic Neko with some basic default middleware - neko.Logger and neko.Recovery.
 func Classic(appName ...string) *Engine {
