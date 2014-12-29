@@ -103,7 +103,6 @@ func (c *Engine) createContext(w http.ResponseWriter, req *http.Request, params 
 	ctx := c.pool.Get().(*Context)
 	ctx.Writer = &ctx.writer
 	ctx.Req = req
-	ctx.Cookies = GetCookies(w, req)
 	ctx.Params = params
 	ctx.handlers = handlers
 	ctx.writer.reset(w)
