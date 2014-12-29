@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"os"
 	"sync"
 )
 
@@ -97,4 +98,21 @@ func (c *Engine) handle404(w http.ResponseWriter, req *http.Request) {
 
 func (c *Engine) reuseContext(ctx *Context) {
 	c.pool.Put(ctx)
+}
+
+const (
+	DEV  string = "development"
+	PROD string = "production"
+	TEST string = "test"
+)
+
+// NekoEnv is the environment that Neko is executing in.
+// The NEKO_ENV is read on initialization to set this variable.
+var NekoEnv = DEV
+
+func init() {
+	env := os.Getenv("NEKO_ENV")
+	if len(env) > 0 {
+		NekoEnv = env
+	}
 }

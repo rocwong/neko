@@ -9,6 +9,25 @@ import (
 	"runtime"
 )
 
+const panicHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PANIC</title>
+<style>
+body{margin:0;background:#333;color:#fff;font-size:14px;}
+h1{margin:0;padding:20px 30px 15px;border-bottom:2px solid #000;background:#222;color:#d04526;font-size:30px;}
+</style>
+</head>
+<body>
+<h1>PANIC</h1>
+<pre style="margin:20px 30px;font-size:20px;">%s</pre>
+<pre style="margin:10px 30px 10px;padding:25px 30px;border:2px solid #222;background:#444;color:#ccc">%s</pre>
+</body>
+</html>
+`
+
 var (
 	dunno     = []byte("???")
 	centerDot = []byte("·")
@@ -77,6 +96,7 @@ func function(pc uintptr) []byte {
 	return name
 }
 
+// Recovery returns a middleware that recovers from any panics and writes a 500 if there was one.
 func Recovery() HandlerFunc {
 	return func(ctx *Context) {
 		defer func() {
@@ -84,6 +104,11 @@ func Recovery() HandlerFunc {
 				stack := stack(3)
 				log.Printf("[%s] PANIC: %s\n%s", ctx.Engine.AppName, err, stack)
 				ctx.Writer.WriteHeader(http.StatusInternalServerError)
+				if NekoEnv != PROD {
+					ctx.SetHeader("Content-Type", "text/html")
+					ctx.Writer.Write([]byte([]byte(fmt.Sprintf(panicHtml, err, stack))))
+				}
+				ctx.Abort()
 			}
 		}()
 

@@ -20,30 +20,30 @@ var (
 func Logger() HandlerFunc {
 	stdlogger := log.New(os.Stdout, "", 0)
 
-	return func(c *Context) {
+	return func(ctx *Context) {
 		// Start timer
 		start := time.Now()
 
 		// Process request
-		c.Next()
+		ctx.Next()
 		// Stop timer
 		end := time.Now()
 		latency := end.Sub(start)
 
-		clientIP := c.ClientIP()
-		method := c.Req.Method
-		statusCode := c.Writer.Status()
+		clientIP := ctx.ClientIP()
+		method := ctx.Req.Method
+		statusCode := ctx.Writer.Status()
 		statusColor := colorForStatus(statusCode)
 		methodColor := colorForMethod(method)
 
 		stdlogger.Printf("%s[%s]%s %v |%s %3d %s| %12v | %s |%s %-5s %s %s",
-			blue, c.Engine.AppName, reset,
+			blue, ctx.Engine.AppName, reset,
 			end.Format("2006/01/02 - 15:04:05"),
 			statusColor, statusCode, reset,
 			latency,
 			clientIP,
 			methodColor, method, reset,
-			c.Req.URL.Path,
+			ctx.Req.URL.Path,
 		)
 	}
 }
@@ -75,9 +75,7 @@ func colorForMethod(method string) string {
 		return green
 	case method == "HEAD":
 		return magenta
-	case method == "OPTIONS":
-		return white
 	default:
-		return reset
+		return white
 	}
 }
