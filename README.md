@@ -1,8 +1,11 @@
 #Neko
 [![wercker status](https://app.wercker.com/status/2ab4b79cf2d418606e884c5d98d1ec0d/s "wercker status")](https://app.wercker.com/project/bykey/2ab4b79cf2d418606e884c5d98d1ec0d)
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/rocwong/neko)
+[![GoCover](http://gocover.io/_badge/github.com/rocwong/neko)](http://gocover.io/github.com/rocwong/neko)
 
 A lightweight web application framework for Golang
+
+**NOTE: Neko is still under development, so API might be changed in future.**
 
 ## Features
 
@@ -59,6 +62,29 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
   })
   //match /v1/act
   v1.GET("/act", act)
+~~~
+
+##Render
+~~~go
+  type ExampleXml struct {
+    XMLName xml.Name `xml:"example"`
+    One     string   `xml:"one,attr"`
+    Two     string   `xml:"two,attr"`
+  }
+
+  //return: <example one="hello" two="xml"/>
+  ctx.Xml(ExampleXml{One: "hello", Two: "xml"})
+~~~
+
+~~~go
+  //response: {"msg": "json render", "status": 200}
+  ctx.Json(neko.JSON{"msg": "json render", "status": 200})
+
+  //response: neko({"msg": "json render", "status": 200})
+  ctx.Jsonp("neko", neko.JSON{"msg": "json render", "status": 200})
+
+  // response: neko text
+  ctx.Text("neko text")
 ~~~
 
 ## Parameters
@@ -150,6 +176,18 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
 
 #### More middleware
 For more middleware and functionality, check out the repositories in the  [neko-contrib](https://github.com/neko-contrib) organization.
+
+## Others
+~~~go
+  // static serves
+  app.Static("/static", "content/static")
+
+  // get remote ip address
+  app.GET("/", func (ctx *neko.Context) {
+    ctx.ClientIP()
+  }
+~~~
+
 
 ## Credits & Thanks
 I use code/got inspiration from these excellent libraries:
