@@ -149,7 +149,7 @@ app.GET("/get-secure", func (ctx *neko.Context) {
 })
 
 ~~~
-Use following arguments order to set more properties: SetCookie/SetCookieSecret(name, value [, MaxAge, Path, Domain, Secure, HttpOnly]).
+Use following arguments order to set more properties: `SetCookie/SetCookieSecret(name, value [, MaxAge, Path, Domain, Secure, HttpOnly])`.
 
 ## Middlewares
 
