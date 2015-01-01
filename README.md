@@ -51,16 +51,16 @@ Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprout
 ##Group Routing
 ~~~go
 v1 := app.Group("/v1", func(router *neko.RouterGroup) {
-  //match /v1/item
+  // Match /v1/item
   router.GET("/item", item)
 
-  // nested group
+  // Nested group
   router.Group("/sub", func(sub *neko.RouterGroup) {
-    //match /v1/sub/myitem
+    // Match /v1/sub/myitem
     sub.GET("/myitem", myitem)
   })
 })
-//match /v1/act
+// Match /v1/act
 v1.GET("/act", act)
 ~~~
 
@@ -90,36 +90,36 @@ type ExampleXml struct {
   Two     string   `xml:"two,attr"`
 }
 
-//response: <example one="hello" two="xml"/>
+// Response: <example one="hello" two="xml"/>
 ctx.Xml(ExampleXml{One: "hello", Two: "xml"})
 ~~~
 
 ~~~go
-//response: {"msg": "json render", "status": 200}
+// Response: {"msg": "json render", "status": 200}
 ctx.Json(neko.JSON{"msg": "json render", "status": 200})
 
-//response: neko({"msg": "json render", "status": 200})
+// Response: neko({"msg": "json render", "status": 200})
 ctx.Jsonp("neko", neko.JSON{"msg": "json render", "status": 200})
 
-// response: neko text
+// Response: neko text
 ctx.Text("neko text")
 ~~~
 
 ####Redirect
 ~~~go
-//default 302
+// Default 302
 ctx.Redirect("/")
 
-//redirect 301
+// Redirect 301
 ctx.Redirect("/", 301)
 ~~~
 
 ####Headers
 ~~~go
-// get header
+// Get header
 ctx.Writer.Header()
 
-// set header
+// Set header
 ctx.SetHeader("x-before", "before")
 ~~~
 
@@ -136,7 +136,7 @@ app.GET("/get", func (ctx *neko.Context) {
 ~~~
 ####Secure cookie
 ~~~ go
-//set cookie secret
+// Set cookie secret
 app.SetCookieSecret("secret123")
 
 app.GET("/set-secure", func (ctx *neko.Context) {
@@ -149,7 +149,9 @@ app.GET("/get-secure", func (ctx *neko.Context) {
 })
 
 ~~~
-Use following arguments order to set more properties: `SetCookie/SetCookieSecret(name, value [, MaxAge, Path, Domain, Secure, HttpOnly])`.
+Use following arguments order to set more properties:
+
+`SetCookie/SetCookieSecret(name, value [, MaxAge, Path, Domain, Secure, HttpOnly])`.
 
 ## Middlewares
 
@@ -161,9 +163,8 @@ app.Use(neko.Logger())
 // Per route middlewares, you can add as many as you desire.
 app.Get("/user", mymiddleware(), mymiddleware2(), user)
 
-//Pass middlewares to groups
+// Pass middlewares to groups
 v1 := app.Group("/v1", func(router *neko.RouterGroup) {
-  //url: /v1/item
   router.GET("/item", item)
 }, mymiddleware1(), mymiddleware2(), mymiddleware3())
 
@@ -174,16 +175,16 @@ v1.Use(mymiddleware4)
 ~~~go
 func mymiddleware() neko.HandlerFunc {
   return func (ctx *neko.Context) {
-    //before request
+    // Before request
     t := time.Now()
 
     ctx.Next()
 
-    // after request
+    // After request
     latency := time.Since(t)
     log.Print(latency)
 
-    // access the status we are sending
+    // Access the status we are sending
     status := c.Writer.Status()
     log.Println(status)
   }
@@ -195,10 +196,10 @@ For more middleware and functionality, check out the repositories in the  [neko-
 
 ## Others
 ~~~go
-// static serves
+// Static serves
 app.Static("/static", "content/static")
 
-// get remote ip address
+// Get remote ip address
 app.GET("/", func (ctx *neko.Context) {
   ctx.ClientIP()
 }
