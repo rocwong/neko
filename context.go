@@ -10,7 +10,6 @@ import (
 type Context struct {
 	Writer   ResponseWriter
 	Req      *http.Request
-	Cookies  Cookie
 	Session  Session
 	Params   httprouter.Params
 	Engine   *Engine
@@ -75,18 +74,6 @@ func (c *Context) Xml(data interface{}, status ...int) {
 // Writes the given string into the response body and sets the Content-Type to "text/plain".
 func (c *Context) Text(data string, status ...int) {
 	c.executeRender(data, c.Writer, render.TEXT{}, status...)
-}
-
-// ClientIP returns more real IP address.
-func (c *Context) ClientIP() string {
-	clientIP := c.Req.Header.Get("X-Real-IP")
-	if len(clientIP) == 0 {
-		clientIP = c.Req.Header.Get("X-Forwarded-For")
-	}
-	if len(clientIP) == 0 {
-		clientIP = c.Req.RemoteAddr
-	}
-	return clientIP
 }
 
 func (c *Context) executeRender(data interface{}, w http.ResponseWriter, render render.Render, status ...int) {

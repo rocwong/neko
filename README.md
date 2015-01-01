@@ -123,6 +123,34 @@ ctx.Writer.Header()
 ctx.SetHeader("x-before", "before")
 ~~~
 
+##Cookie
+~~~ go
+app.GET("/", func (ctx *neko.Context) {
+  ctx.SetCookie("myvalue", "Cookies Save")
+  ctx.Text("Cookies Save")
+})
+
+app.GET("/get", func (ctx *neko.Context) {
+  ctx.Text(ctx.GetCookie("myvalue"))
+})
+~~~
+####Secure cookie
+~~~ go
+//set cookie secret
+app.SetCookieSecret("secret123")
+
+app.GET("/set-secure", func (ctx *neko.Context) {
+  ctx.SetSecureCookie("sv", "Cookies Save")
+  ctx.Text("Cookies Save")
+})
+
+app.GET("/get-secure", func (ctx *neko.Context) {
+  ctx.Text(ctx.GetSecureCookie("sv"))
+})
+
+~~~
+Use following arguments order to set more properties: SetCookie/SetCookieSecret(name, value [, MaxAge, Path, Domain, Secure, HttpOnly]).
+
 ## Middlewares
 
 ####Using middlewares
