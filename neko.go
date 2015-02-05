@@ -66,19 +66,21 @@ func (c *Engine) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 // Run run the http server.
-func (c *Engine) Run(addr string) {
+func (c *Engine) Run(addr string) error {
 	fmt.Printf("[%s] Listening and serving HTTP on %s \n", c.AppName, addr)
 	if err := http.ListenAndServe(addr, c); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 // Run run the https server.
-func (c *Engine) RunTLS(addr string, cert string, key string) {
+func (c *Engine) RunTLS(addr string, cert string, key string) error {
 	fmt.Printf("[%s] Listening and serving HTTPS on %s \n", c.AppName, addr)
 	if err := http.ListenAndServeTLS(addr, cert, key, c); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func (c *Engine) handle404(w http.ResponseWriter, req *http.Request) {
