@@ -69,3 +69,25 @@ func Test_Render(t *testing.T) {
 		So(w.Code, ShouldEqual, http.StatusMovedPermanently)
 	})
 }
+
+func Test_GetSet(t *testing.T) {
+	Convey("Get/Set Method", t, func() {
+		m := New()
+		m.GET("/test", func(ctx *Context) {
+			So(ctx.Keys, ShouldBeNil)
+
+			ctx.Set("foo", "bar")
+
+			v, err := ctx.Get("foo")
+			So(err, ShouldBeNil)
+			So(v, ShouldEqual, "bar")
+
+			v, err = ctx.Get("foo2")
+			So(err, ShouldNotBeNil)
+		})
+		// First Visit
+		performRequest(m, "GET", "/test")
+		// The Other Visit
+		performRequest(m, "GET", "/test")
+	})
+}

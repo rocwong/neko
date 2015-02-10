@@ -196,12 +196,18 @@ For more middleware and functionality, check out the repositories in the  [neko-
 
 ## Others
 ~~~go
-// Static serves
+// Static Serves
 app.Static("/static", "content/static")
 
-// Get remote ip address
+// Get Remote IP Address
 app.GET("/", func (ctx *neko.Context) {
   ctx.ClientIP()
+}
+
+// Metadata Management
+app.GET("/", func (ctx *neko.Context) {
+  ctx.Set("foo", "bar")
+  v, err := ctx.Get("foo")
 }
 ~~~
 

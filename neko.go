@@ -98,10 +98,6 @@ func (c *Engine) handle404(w http.ResponseWriter, req *http.Request) {
 	c.reuseContext(ctx)
 }
 
-func (c *Engine) reuseContext(ctx *Context) {
-	c.pool.Put(ctx)
-}
-
 const (
 	DEV  string = "development"
 	PROD string = "production"

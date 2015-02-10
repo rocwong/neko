@@ -1,6 +1,7 @@
 package neko
 
 import (
+	"errors"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rocwong/neko/render"
 	"math"
@@ -11,6 +12,7 @@ type Context struct {
 	Writer   ResponseWriter
 	Req      *http.Request
 	Session  Session
+	Keys     map[string]interface{}
 	Params   httprouter.Params
 	Engine   *Engine
 	writer   writer
@@ -31,6 +33,25 @@ func (c *Context) Next() {
 	for ; c.index < s; c.index++ {
 		c.handlers[c.index](c)
 	}
+}
+
+// Sets a new pair key/value just for the specified context.
+func (c *Context) Set(key string, item interface{}) {
+	if c.Keys == nil {
+		c.Keys = make(map[string]interface{})
+	}
+	c.Keys[key] = item
+}
+
+// Get returns the value for the given key or an error if the key does not exist.
+func (c *Context) Get(key string) (interface{}, error) {
+	if c.Keys != nil {
+		value, ok := c.Keys[key]
+		if ok {
+			return value, nil
+		}
+	}
+	return nil, errors.New("Key does not exist.")
 }
 
 // SetHeader sets a response header.
@@ -90,9 +111,14 @@ func (c *Engine) createContext(w http.ResponseWriter, req *http.Request, params 
 	ctx := c.pool.Get().(*Context)
 	ctx.Writer = &ctx.writer
 	ctx.Req = req
+	ctx.Keys = nil
 	ctx.Params = params
 	ctx.handlers = handlers
 	ctx.writer.reset(w)
 	ctx.index = -1
 	return ctx
+}
+
+func (c *Engine) reuseContext(ctx *Context) {
+	c.pool.Put(ctx)
 }
