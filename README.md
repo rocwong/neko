@@ -208,6 +208,7 @@ app.GET("/", func (ctx *neko.Context) {
 app.GET("/", func (ctx *neko.Context) {
   ctx.Set("foo", "bar")
   v, err := ctx.Get("foo")
+  v = ctx.MustGet("foo")
 }
 ~~~
 
