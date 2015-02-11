@@ -84,6 +84,11 @@ func Test_GetSet(t *testing.T) {
 
 			v, err = ctx.Get("foo2")
 			So(err, ShouldNotBeNil)
+
+			v = ctx.MustGet("foo")
+			So(v, ShouldEqual, "bar")
+
+			So(func() { ctx.MustGet("foo3") }, ShouldPanic)
 		})
 		// First Visit
 		performRequest(m, "GET", "/test")

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rocwong/neko/render"
+	"log"
 	"math"
 	"net/http"
 )
@@ -52,6 +53,15 @@ func (c *Context) Get(key string) (interface{}, error) {
 		}
 	}
 	return nil, errors.New("Key does not exist.")
+}
+
+// MustGet returns the value for the given key or panics if the value doesn't exist.
+func (c *Context) MustGet(key string) interface{} {
+	value, err := c.Get(key)
+	if err != nil || value == nil {
+		log.Panicf("Key %s doesn't exist", value)
+	}
+	return value
 }
 
 // SetHeader sets a response header.
