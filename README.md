@@ -3,6 +3,8 @@
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/rocwong/neko)
 [![GoCover](http://gocover.io/_badge/github.com/rocwong/neko)](http://gocover.io/github.com/rocwong/neko)
 
+
+
 A lightweight web application framework for Golang
 
 **NOTE: Neko is still under development, so API might be changed in future.**
@@ -68,15 +70,29 @@ v1.GET("/act", act)
 ~~~go
 // This handler will match /user/neko but will not match neither /user/ or /user
 app.GET("/user/:name", func(ctx *neko.Context) {
-  ctx.Text("Hello " + ctx.Params.ByName("name"))
+  // Request: "/user/neko?name=none&eat=fish"
+  
+  // Response: neko eat fish
+  ctx.Text(ctx.Params.ByGet("name") + " eat " + ctx.Params.ByGet("eat"))
 })
 
 // This one will match /user/neko/ and also /user/neko/3, but no match /user/neko
 app.GET("/user/:name/*age", func(ctx *neko.Context) {
-  name := c.Params.ByName("name")
-  age := c.Params.ByName("age")
-  message := name + " is " + action
+  // Request: "/user/neko/1?eat=fish"
+  
+  name := c.Params.ByGet("name")
+  age := c.Params.ByGet("age")
+  message := name + " is " + action + ", eat " + c.Params.ByGet("eat")
+  
+  // Response: neko is 1, eat fish
   ctx.Text(message)
+})
+
+app.POST("/user", func(ctx *neko.Context) {
+  // Request: "/user"  Post Data: { name: neko, age: 1}
+  
+  // Response: neko is 1
+  ctx.Text(ctx.Params.ByPost("name") + " is " + ctx.Params.ByPost("age"))
 })
 ~~~
 
