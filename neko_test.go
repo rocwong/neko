@@ -47,7 +47,7 @@ func Test_Handlers(t *testing.T) {
 			ctx.Text("not found", http.StatusNotFound)
 		})
 
-		w := performRequest(m, "GET", "/")
+		w := performRequest(m, "GET", "/", "")
 		So(w.HeaderMap.Get("x-before"), ShouldEqual, "before")
 		So(w.Code, ShouldEqual, http.StatusBadRequest)
 		So(w.Body.String(), ShouldEqual, "abort")

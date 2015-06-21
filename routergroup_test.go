@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"net/url"
+	"bytes"
+	"strconv"
+	"strings"
 )
 
 func Test_Router(t *testing.T) {
@@ -19,12 +23,22 @@ func Test_Router(t *testing.T) {
 	testStatic(t)
 }
 
-func performRequest(r http.Handler, method, path string) *httptest.ResponseRecorder {
+func performRequest(r http.Handler, method, path string, postData string) *httptest.ResponseRecorder {
+
 	req, _ := http.NewRequest(method, path, nil)
+	
+	if strings.ToLower(method) == "post" {
+		data, _ := url.ParseQuery(postData)
+		req, _ = http.NewRequest(method, path, bytes.NewBufferString(data.Encode()))
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+	}
+
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
 }
+
 func testRouteOK(method string, t *testing.T) {
 	Convey(method+" Method", t, func() {
 		passed := false
@@ -46,7 +60,7 @@ func testRouteOK(method string, t *testing.T) {
 			m.HEAD("", func(ctx *Context) { passed = true })
 		}
 		// RUN
-		w := performRequest(m, method, "/")
+		w := performRequest(m, method, "/", "")
 
 		So(passed, ShouldBeTrue)
 		So(w.Code, ShouldEqual, http.StatusOK)
@@ -65,16 +79,16 @@ func testGroup(t *testing.T) {
 		})
 		v1.GET("/", func(ctx *Context) { passedGroup2 = true })
 
-		performRequest(m, "GET", "/v1/test")
+		performRequest(m, "GET", "/v1/test", "")
 		So(passedGroup, ShouldBeTrue)
 
-		performRequest(m, "GET", "/v1/")
+		performRequest(m, "GET", "/v1/", "")
 		So(passedGroup2, ShouldBeTrue)
 
-		performRequest(m, "GET", "/v1/sub/test")
+		performRequest(m, "GET", "/v1/sub/test", "")
 		So(passedNest, ShouldBeTrue)
 
-		w := performRequest(m, "GET", "/v2/test")
+		w := performRequest(m, "GET", "/v2/test", "")
 		So(w.Code, ShouldEqual, http.StatusNotFound)
 	})
 }
@@ -83,9 +97,9 @@ func testStatic(t *testing.T) {
 		m := New()
 		So(func() { m.Static("", "test/") }, ShouldPanic)
 		m.Static("/static", "test/")
-		w := performRequest(m, "GET", "/static/test.css")
+		w := performRequest(m, "GET", "/static/test.css", "")
 		So(w.Code, ShouldEqual, http.StatusOK)
-		w = performRequest(m, "GET", "/static/test1.css")
+		w = performRequest(m, "GET", "/static/test1.css", "")
 		So(w.Code, ShouldEqual, http.StatusNotFound)
 	})
 }

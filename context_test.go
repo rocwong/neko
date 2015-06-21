@@ -35,36 +35,36 @@ func Test_Render(t *testing.T) {
 		ctx.Redirect("/", 301)
 	})
 
-	w := performRequest(m, "GET", "/json")
+	w := performRequest(m, "GET", "/json", "")
 	Convey("Json Render", t, func() {
 		So(w.Code, ShouldEqual, http.StatusOK)
 		So(w.Header().Get(render.ContentType), ShouldEqual, render.ContentJSON)
 	})
 
-	w = performRequest(m, "GET", "/jsonp")
+	w = performRequest(m, "GET", "/jsonp", "")
 	Convey("Jsonp Render", t, func() {
 		So(w.Code, ShouldEqual, http.StatusOK)
 		So(w.Header().Get(render.ContentType), ShouldEqual, render.ContentJSONP)
 	})
 
-	w = performRequest(m, "GET", "/xml")
+	w = performRequest(m, "GET", "/xml", "")
 	Convey("Xml Render", t, func() {
 		So(w.Code, ShouldEqual, http.StatusOK)
 		So(w.Header().Get(render.ContentType), ShouldEqual, render.ContentXML)
 	})
 
-	w = performRequest(m, "GET", "/text")
+	w = performRequest(m, "GET", "/text", "")
 	Convey("Text Render", t, func() {
 		So(w.Code, ShouldEqual, http.StatusNotFound)
 		So(w.Header().Get(render.ContentType), ShouldEqual, render.ContentPlain)
 	})
 
-	w = performRequest(m, "GET", "/redirect/302")
+	w = performRequest(m, "GET", "/redirect/302", "")
 	Convey("Redirect 302", t, func() {
 		So(w.Code, ShouldEqual, http.StatusFound)
 	})
 
-	w = performRequest(m, "GET", "/redirect/301")
+	w = performRequest(m, "GET", "/redirect/301", "")
 	Convey("Redirect 301", t, func() {
 		So(w.Code, ShouldEqual, http.StatusMovedPermanently)
 	})
@@ -91,8 +91,8 @@ func Test_GetSet(t *testing.T) {
 			So(func() { ctx.MustGet("foo3") }, ShouldPanic)
 		})
 		// First Visit
-		performRequest(m, "GET", "/test")
+		performRequest(m, "GET", "/test", "")
 		// The Other Visit
-		performRequest(m, "GET", "/test")
+		performRequest(m, "GET", "/test", "")
 	})
 }

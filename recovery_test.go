@@ -13,8 +13,8 @@ func Test_Recovery(t *testing.T) {
 		m.Use(func(ctx *Context) {
 			panic("here is a panic!")
 		})
-		So(func() { performRequest(m, "GET", "/") }, ShouldNotPanic)
-		w := performRequest(m, "GET", "/")
+		So(func() { performRequest(m, "GET", "/", "") }, ShouldNotPanic)
+		w := performRequest(m, "GET", "/", "")
 		So(w.Code, ShouldEqual, http.StatusInternalServerError)
 		So(w.HeaderMap.Get("Content-Type"), ShouldEqual, "text/html")
 	})
