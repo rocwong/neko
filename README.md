@@ -37,7 +37,7 @@ app.Use(neko.Recovery())
 ~~~
 
 ##Routing
-Using GET, POST, PUT, PATCH, DELETE, HEAD and OPTIONS
+Using GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS and Any
 ~~~go
 app.GET("/get", get)
 app.POST("/post", post)
@@ -46,6 +46,8 @@ app.PATCH("/patch", patch)
 app.DELETE("/delete", delete)
 app.HEAD("/head", head)
 app.OPTIONS("/options", options)
+// A shortcut for all request methods
+app.Any("/any", options)
 ~~~
 Neko uses julienschmidt's [httprouter](https://github.com/julienschmidt/httprouter) internaly.
 
@@ -68,7 +70,7 @@ v1.GET("/act", act)
 
 ## Parameters
 
-####ByGet
+####Parameters in path
 ~~~go
 app.GET("/user/:name/*age", func(ctx *neko.Context) {
   // Request: "/user/neko/1?name=none&food=fish"
@@ -82,17 +84,17 @@ app.GET("/user/:name/*age", func(ctx *neko.Context) {
 })
 ~~~
 
-####ByPost
+####Multipart/Urlencoded Form
 ~~~go
 app.POST("/user", func(ctx *neko.Context) {
-  // Request: "/user"  Post Data: { name: neko, age: 1} Content-type: "application/x-www-form-urlencoded"
+  // Request: "/user"  Post Data: { name: neko, age: 1}
   
   // Response: neko is 1
   ctx.Text(ctx.Params.ByPost("name") + " is " + ctx.Params.ByPost("age"))
 })
 ~~~
 
-####Json
+####Json Data
 ~~~go
 app.POST("/user", func(ctx *neko.Context) {
   // Request: "/user"  Post Data: { name: neko, age: 1} Content-type: "application/json"
@@ -240,9 +242,9 @@ app.GET("/", func (ctx *neko.Context) {
 ## Credits & Thanks
 I use code/got inspiration from these excellent libraries:
 
-*  [Gin](https://github.com/gin-gonic/gin) - design based on.
-*  [Httprouter](https://github.com/julienschmidt/httprouter)
+*  [Gin](https://github.com/gin-gonic/gin)
 *  [Martini](https://github.com/go-martini/martini)
+*  [Httprouter](https://github.com/julienschmidt/httprouter)
 
 
 ## License

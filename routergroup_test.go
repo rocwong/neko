@@ -1,32 +1,36 @@
 package neko
 
 import (
+	"bytes"
 	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"net/url"
-	"bytes"
 	"strconv"
 	"strings"
+	"testing"
 )
 
 func Test_Router(t *testing.T) {
-	testRouteOK("GET", t)
-	testRouteOK("POST", t)
-	testRouteOK("DELETE", t)
-	testRouteOK("PATCH", t)
-	testRouteOK("PUT", t)
-	testRouteOK("OPTIONS", t)
-	testRouteOK("HEAD", t)
+	testRoute("GET", t)
+	testRoute("POST", t)
+	testRoute("DELETE", t)
+	testRoute("PATCH", t)
+	testRoute("PUT", t)
+	testRoute("OPTIONS", t)
+	testRoute("HEAD", t)
+
+	testRouteAny(t)
+
 	testGroup(t)
+
 	testStatic(t)
 }
 
 func performRequest(r http.Handler, method, path string, postData string) *httptest.ResponseRecorder {
 
 	req, _ := http.NewRequest(method, path, nil)
-	
+
 	if strings.ToLower(method) == "post" {
 		data, _ := url.ParseQuery(postData)
 		req, _ = http.NewRequest(method, path, bytes.NewBufferString(data.Encode()))
@@ -42,7 +46,7 @@ func performRequest(r http.Handler, method, path string, postData string) *httpt
 	return w
 }
 
-func testRouteOK(method string, t *testing.T) {
+func testRoute(method string, t *testing.T) {
 	Convey(method+" Method", t, func() {
 		passed := false
 		m := New()
@@ -67,6 +71,64 @@ func testRouteOK(method string, t *testing.T) {
 
 		So(passed, ShouldBeTrue)
 		So(w.Code, ShouldEqual, http.StatusOK)
+	})
+}
+
+func testRouteAny(t *testing.T) {
+	Convey("Any Method", t, func() {
+		passed := false
+		m := New()
+		m.Any("", func(ctx *Context) { passed = true })
+
+		w := performRequest(m, "GET", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "POST", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "PUT", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "PATCH", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "HEAD", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "OPTIONS", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "DELETE", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "CONNECT", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "TRACE", "/", "")
+		So(passed, ShouldBeTrue)
+		So(w.Code, ShouldEqual, http.StatusOK)
+
+		passed = false
+		w = performRequest(m, "NO", "/", "")
+		So(passed, ShouldBeFalse)
+		So(w.Code, ShouldEqual, http.StatusMethodNotAllowed)
+
 	})
 }
 
