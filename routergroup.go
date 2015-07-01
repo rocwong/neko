@@ -84,6 +84,19 @@ func (c *RouterGroup) HEAD(relativePath string, handlers ...HandlerFunc) {
 	c.Handle("HEAD", relativePath, handlers)
 }
 
+// Any is a shortcut for all request methods
+func (c *RouterGroup) Any(relativePath string, handlers ...HandlerFunc) {
+	c.Handle("GET", relativePath, handlers)
+	c.Handle("POST", relativePath, handlers)
+	c.Handle("PUT", relativePath, handlers)
+	c.Handle("PATCH", relativePath, handlers)
+	c.Handle("HEAD", relativePath, handlers)
+	c.Handle("OPTIONS", relativePath, handlers)
+	c.Handle("DELETE", relativePath, handlers)
+	c.Handle("CONNECT", relativePath, handlers)
+	c.Handle("TRACE", relativePath, handlers)
+}
+
 // Static serves files from the given file system root.
 // Internally a http.FileServer is used, therefore http.NotFound is used instead
 // of the Router's NotFound handler.
