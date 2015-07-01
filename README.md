@@ -67,32 +67,40 @@ v1.GET("/act", act)
 ~~~
 
 ## Parameters
-~~~go
-// This handler will match /user/neko but will not match neither /user/ or /user
-app.GET("/user/:name", func(ctx *neko.Context) {
-  // Request: "/user/neko?name=none&eat=fish"
-  
-  // Response: neko eat fish
-  ctx.Text(ctx.Params.ByGet("name") + " eat " + ctx.Params.ByGet("eat"))
-})
 
-// This one will match /user/neko/ and also /user/neko/3, but no match /user/neko
+####ByGet
+~~~go
 app.GET("/user/:name/*age", func(ctx *neko.Context) {
-  // Request: "/user/neko/1?eat=fish"
+  // Request: "/user/neko/1?name=none&food=fish"
   
   name := c.Params.ByGet("name")
   age := c.Params.ByGet("age")
-  message := name + " is " + action + ", eat " + c.Params.ByGet("eat")
+  food := c.Params.ByGet("food")
   
   // Response: neko is 1, eat fish
-  ctx.Text(message)
+  ctx.Text(name + " is " + age + ", eat " + ctx.Params.ByGet("eat"))
 })
+~~~
 
+####ByPost
+~~~go
 app.POST("/user", func(ctx *neko.Context) {
-  // Request: "/user"  Post Data: { name: neko, age: 1}
+  // Request: "/user"  Post Data: { name: neko, age: 1} Content-type: "application/x-www-form-urlencoded"
   
   // Response: neko is 1
   ctx.Text(ctx.Params.ByPost("name") + " is " + ctx.Params.ByPost("age"))
+})
+~~~
+
+####Json
+~~~go
+app.POST("/user", func(ctx *neko.Context) {
+  // Request: "/user"  Post Data: { name: neko, age: 1} Content-type: "application/json"
+  
+  // Only get once
+  dataJson := ctx.Params.Json()
+  // Response: neko is 1
+  ctx.Text(dataJson.Get("name") + " is " + dataJson.Get("age"))
 })
 ~~~
 
