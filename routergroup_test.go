@@ -32,6 +32,9 @@ func performRequest(r http.Handler, method, path string, postData string) *httpt
 		req, _ = http.NewRequest(method, path, bytes.NewBufferString(data.Encode()))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+	} else if strings.ToLower(method) == "post|json" {
+		req, _ = http.NewRequest("POST", path, bytes.NewBufferString(postData))
+		req.Header.Add("Content-Type", "application/json;")
 	}
 
 	w := httptest.NewRecorder()
