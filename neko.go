@@ -47,7 +47,7 @@ func New() *Engine {
 		engine:       engine,
 	}
 	engine.router = httprouter.New()
-	engine.router.NotFound = engine.handle404
+	engine.router.NotFound = http.HandlerFunc(engine.handle404)
 	engine.pool.New = func() interface{} {
 		ctx := &Context{Engine: engine}
 		return ctx
