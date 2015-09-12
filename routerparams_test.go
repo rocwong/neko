@@ -19,14 +19,26 @@ func Test_RouterParams(t *testing.T) {
 	m.POST("/json/:name", func(ctx *Context) {
 		dataJson := ctx.Params.Json()
 		So(ctx.Params.ByGet("name"), ShouldEqual, "neko")
+
 		So(dataJson.Get("say"), ShouldEqual, "hello")
-		So(dataJson.String(), ShouldEqual, `{"say": "hello"}`)
+		So(dataJson.GetString("say"), ShouldEqual, "hello")
+		So(dataJson.GetInt32("int32"), ShouldEqual, 1)
+		So(dataJson.GetUInt32("uint32"), ShouldEqual, 2)
+		So(dataJson.GetFloat32("float32"), ShouldEqual, 3)
+		So(dataJson.GetFloat64("float64"), ShouldEqual, 4)
+
+		So(dataJson.String(), ShouldEqual, `{"say": "hello", "int32": "1", "uint32": "2", "float32": "3", "float64": "4"}`)
 	})
 
 	m.POST("/json-empty", func(ctx *Context) {
 		dataJson := ctx.Params.Json()
 		So(dataJson.String(), ShouldEqual, "")
 		So(dataJson.Get("empty"), ShouldEqual, "")
+		So(dataJson.GetString("say"), ShouldEqual, "")
+		So(dataJson.GetInt32("int32"), ShouldEqual, 0)
+		So(dataJson.GetUInt32("uint32"), ShouldEqual, 0)
+		So(dataJson.GetFloat32("float32"), ShouldEqual, 0)
+		So(dataJson.GetFloat64("float64"), ShouldEqual, 0)
 	})
 
 	Convey("Get Params By Query String", t, func() {
@@ -36,7 +48,7 @@ func Test_RouterParams(t *testing.T) {
 		performRequest(m, "POST", "/params/neko", "say=hello&name=golang")
 	})
 	Convey("Get Params By Json Data", t, func() {
-		performRequest(m, "POST|JSON", "/json/neko", `{"say": "hello"}`)
+		performRequest(m, "POST|JSON", "/json/neko", `{"say": "hello", "int32": "1", "uint32": "2", "float32": "3", "float64": "4"}`)
 		performRequest(m, "POST|JSON", "/json-empty", "")
 	})
 }
