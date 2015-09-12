@@ -33,7 +33,7 @@ func (c *routerParams) Json() *jsonParams {
 	defer c.req.Body.Close()
 
 	data, _ := ioutil.ReadAll(c.req.Body)
-	objJson := &jsonParams{ data: map[string]string{}}
+	objJson := &jsonParams{ data: map[string]interface{}{}}
 	objJson.source = string(data)
 	json.Unmarshal(data, &objJson.data);
 
@@ -42,14 +42,49 @@ func (c *routerParams) Json() *jsonParams {
 
 type jsonParams struct {
 	source string
-	data map[string]string
+	data map[string]interface{}
 }
 
-func (c *jsonParams) Get(name string) string {
+func (c *jsonParams) Get(name string) interface{} {
 	if len(c.data) == 0 {
 		return ""
 	}
 	return c.data[name]
+}
+
+func (c *jsonParams) GetString(name string) string {
+	if len(c.data) == 0 {
+		return ""
+	}
+	return toString(c.data[name])
+}
+
+func (c *jsonParams) GetInt32(name string) int32 {
+	if len(c.data) == 0 {
+		return 0
+	}
+	return toInt32(c.data[name])
+}
+
+func (c *jsonParams) GetUInt32(name string) uint32 {
+	if len(c.data) == 0 {
+		return 0
+	}
+	return toUint32(c.data[name])
+}
+
+func (c *jsonParams) GetFloat32(name string) float32 {
+	if len(c.data) == 0 {
+		return 0
+	}
+	return toFloat32(c.data[name])
+}
+
+func (c *jsonParams) GetFloat64(name string) float64 {
+	if len(c.data) == 0 {
+		return 0
+	}
+	return toFloat64(c.data[name])
 }
 
 func (c *jsonParams) String() string {
