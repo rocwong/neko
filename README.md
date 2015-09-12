@@ -101,8 +101,18 @@ app.POST("/user", func(ctx *neko.Context) {
   
   // Only get once
   dataJson := ctx.Params.Json()
+  
   // Response: neko is 1
-  ctx.Text(dataJson.Get("name") + " is " + dataJson.Get("age"))
+  ctx.Text(dataJson.GetString("name") + " is " + dataJson.Get("age"))
+  
+  // dataJson.Get(param) : return type interface {}
+  // dataJson.GetString(param) : return type string
+  // dataJson.GetInt32(param) : return type int32
+  // dataJson.GetUInt32(param) : return type uint32
+  // dataJson.GetFloat32(param) : return type float32
+  // dataJson.GetFloat64(param) : return type float64
+
+  
 })
 ~~~
 
