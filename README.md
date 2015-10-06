@@ -26,7 +26,7 @@ func main() {
   app.GET("/", func(ctx *neko.Context)  {
       ctx.Text("Hello world!")
   })
-  m.Run(":3000")
+  app.Run(":3000")
 }
 ~~~
 Initial Neko without middlewares
