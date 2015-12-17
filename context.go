@@ -14,7 +14,7 @@ type Context struct {
 	Req      *http.Request
 	Session  Session
 	Keys     map[string]interface{}
-	Params routerParams
+	Params   routerParams
 	Engine   *Engine
 	writer   writer
 	handlers []HandlerFunc
@@ -122,7 +122,7 @@ func (c *Engine) createContext(w http.ResponseWriter, req *http.Request, params 
 	ctx.Writer = &ctx.writer
 	ctx.Req = req
 	ctx.Keys = nil
-	ctx.Params = routerParams{ req: req, params: params}
+	ctx.Params = routerParams{req: req, params: params}
 	ctx.handlers = handlers
 	ctx.writer.reset(w)
 	ctx.index = -1

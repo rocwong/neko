@@ -29,6 +29,12 @@ func (c *routerParams) File(name string) (multipart.File, *multipart.FileHeader,
 	return c.req.FormFile(name)
 }
 
+func (c *routerParams) BindJSON(obj interface{}) error {
+	decoder := json.NewDecoder(c.req.Body)
+	err := decoder.Decode(obj)
+	return err
+}
+
 func (c *routerParams) Json() *jsonParams {
 	defer c.req.Body.Close()
 

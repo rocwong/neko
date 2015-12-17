@@ -111,8 +111,22 @@ app.POST("/user", func(ctx *neko.Context) {
   // dataJson.GetUInt32(param) : return type uint32
   // dataJson.GetFloat32(param) : return type float32
   // dataJson.GetFloat64(param) : return type float64
+})
+~~~
 
-  
+####BindJSON
+~~~go
+type User struct {
+  User     string
+  Password string
+}
+app.POST("/user", func(ctx *neko.Context) {
+  // Request: "/user"  Post Data: { name: neko, password: abcdefg} Content-type: "application/json"
+  var json User
+  if ctx.Params.BindJSON(&json) == nil {
+    // Response: neko's password abcdefg
+    ctx.Text(json.Name + "'s password " + json.Password)
+  }
 })
 ~~~
 
