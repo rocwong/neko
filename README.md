@@ -75,9 +75,9 @@ v1.GET("/act", act)
 app.GET("/user/:name/*age", func(ctx *neko.Context) {
   // Request: "/user/neko/1?name=none&food=fish"
   
-  name := c.Params.ByGet("name")
-  age := c.Params.ByGet("age")
-  food := c.Params.ByGet("food")
+  name := ctx.Params.ByGet("name")
+  age := ctx.Params.ByGet("age")
+  food := ctx.Params.ByGet("food")
   
   // Response: neko is 1, eat fish
   ctx.Text(name + " is " + age + ", eat " + ctx.Params.ByGet("eat"))
@@ -235,7 +235,7 @@ func mymiddleware() neko.HandlerFunc {
     log.Print(latency)
 
     // Access the status we are sending
-    status := c.Writer.Status()
+    status := ctx.Writer.Status()
     log.Println(status)
   }
 }
